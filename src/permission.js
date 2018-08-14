@@ -1,4 +1,4 @@
-/*
+
 import router from './router'
 import store from './store'
 import NProgress from 'nprogress' // Progress 进度条
@@ -40,4 +40,4 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   NProgress.done() // 结束Progress
 })
-*/
+

@@ -306,7 +306,7 @@ export default {
         key: 5,
         value: '已移除'
       }],
-      uploadActionUrl: 'http://localhost:9090/api/dapp/upload.do',
+      uploadActionUrl: 'http://118.24.135.98:8080/dapp-java/api/dapp/upload.do',
       fileList: [],
       currentRow: null,
       listLoading: true
