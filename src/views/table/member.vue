@@ -220,7 +220,8 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createMember(this.temp).then(() => {
+          createMember(this.temp).then((res) => {
+            this.temp.memberId = res.data
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({

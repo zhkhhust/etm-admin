@@ -9,8 +9,7 @@
       </div>
       <el-dropdown-menu class="user-dropdown" slot="dropdown">        
         <el-dropdown-item divided>
-          <!-- <span @click="logout" style="display:block;">LogOut</span>-->
-          <a href="/api/user/logout.do"  > LogOut </a>
+          <span @click="logout" style="display:block;">LogOut</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>

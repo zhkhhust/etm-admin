@@ -24,7 +24,7 @@
       </el-table-column>
       <el-table-column label="图标" width="110" align="center">
         <template slot-scope="scope">
-          {{scope.row.icon}}
+          <img v-bind:src="scope.row.icon" style="width: 50px;height: 50px" >
         </template>
       </el-table-column>
       
@@ -56,7 +56,7 @@
 
             <el-upload style="float:left;margin-left:8px;"
               accept="image/jpeg,image/gif,image/png"
-              :action="uploadActionUrl"
+              :action="fileUploadUrl"
               :show-file-list="false"
               :before-upload="beforeImageUpload"
               name="files"
@@ -70,7 +70,7 @@
 
             <el-upload style="float:left; margin-left:8px;"
               accept="application/x-zip-compressed"
-              :action="uploadActionUrl"
+              :action="fileUploadUrl"
               :before-upload="beforeDappUpload"
               name="files"
               :on-success="updateDappLinkSuccess"
@@ -134,7 +134,7 @@
           <el-upload
             class="upload-demo"
             accept="image/jpeg,image/gif,image/png"
-            :action="uploadActionUrl"
+            :action="fileUploadUrl"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
@@ -155,7 +155,7 @@
           <el-upload
             class="upload-demo"
             accept="application/x-zip-compressed"
-            :action="uploadActionUrl"
+            :action="fileUploadUrl"
             :before-upload="beforeDappUpload"
             name="files"
             :on-success="uploadDappSuccess"
@@ -196,7 +196,7 @@
 
 <script>
 import { fetchMemberList } from '@/api/member'
-import { fetchDappList, createDapp, updateDapp, updateDappState, registerDapp } from '@/api/dapp'
+import { fetchDappList, createDapp, updateDapp, updateDappState, registerDapp, fileUploadUrl } from '@/api/dapp'
 import { parseTime } from '@/utils/index'
 
 const categoryMap = [
@@ -306,10 +306,17 @@ export default {
         key: 5,
         value: '已移除'
       }],
-      uploadActionUrl: 'http://118.24.135.98:8080/dapp-java/api/dapp/upload.do',
+      // uploadActionUrl: 'http://118.24.135.98:9090/api/dapp/upload.do',
+      // uploadActionUrl: 'http://116.211.100.207:9090/api/dapp/upload.do',
+      // uploadActionUrl: '/api/dapp/upload.do',
       fileList: [],
       currentRow: null,
       listLoading: true
+    }
+  },
+  computed: {
+    fileUploadUrl: function() {
+      return fileUploadUrl()
     }
   },
   filters: {
@@ -351,7 +358,6 @@ export default {
       this.currentRow = row
     },
     beforeImageUpload(file) {
-      console.dir(file)
       const isIMAGE = file.type === 'image/jpeg' || file.type === 'image/gif' || file.type === 'image/png'
       if (!isIMAGE) {
         this.$message.error('上传文件只能是图片格式!')
@@ -387,6 +393,7 @@ export default {
                 type: 'success',
                 duration: 2000
               })
+              // location.reload()
               break
             }
           }
@@ -419,6 +426,7 @@ export default {
       }
     },
     beforeDappUpload(file) {
+      console.log('Before dapp upload')
       const isZip = file.type === 'application/x-zip-compressed'
       if (!isZip) {
         this.$message.error('上传文件只能是zip格式!')
@@ -428,7 +436,24 @@ export default {
         this.$message.error('上传文件大小不能超过 1M!')
         return false
       }
+      // var url = fileUploadUrl()
+      // console.log(url)
       return true
+      // console.dir(file)
+      /*
+      var DecompressZip = require('decompress-zip')
+      var unzipper = new DecompressZip(file.raw)
+      unzipper.on('error', function(err) {
+        console.log('Caught an error')
+        return false
+      })
+
+      unzipper.on('list', function(files) {
+        console.log('The archive contains:');
+        console.log(files)
+      })
+
+      unzipper.list()*/
     },
     uploadDappSuccess(response, file, fileList) {
       if (response.code === 20000) {
@@ -499,10 +524,13 @@ export default {
       this.temp = {
         dappId: undefined,
         name: '',
+        state: 0,
         icon: '',
         link: '',
-        secrets: 'mom butter member circle feature law student join affair abandon slight roast,tuition opinion relax angle whisper female jelly bracket buddy clock fine hammer,brief fiscal monkey couch control hair spring before hire hope siren bacon,deny wife print subway wave typical anxiety rough deer borrow depart wrap,say improve almost virtual dynamic frog lend horn social fault sugar melody',
-        delegates: 'f84fea3b92930f44c1b5d8834da70e37f7819b17bd72367a8619811f87a653c6,24971c952fc718dca69ccbc18b44affa4595f39c3375e624cd2fdba35a7b9b62,0603a41639854643bb731b69160f246f5da59898ac9f1d9d974d487518650f20,f772d0035e49bc7bb684bfbc9fd7ad2a0654f67610af3a0cd849f38103769ecf,4bcb19cb40554d3f5639e7423a5e17f5564da17fb025ee38d40f610175ee12bb'
+        secrets: 'flame bottom dragon rely endorse garage supply urge turtle team demand put,thrive veteran child enforce puzzle buzz valley crew genuine basket start top,black tool gift useless bring nothing huge vendor asset mix chimney weird,ribbon crumble loud chief turn maid neglect move day churn share fabric,scan prevent agent close human pair aerobic sad forest wave toe dust',
+        delegates: 'db18d5799944030f76b6ce0879b1ca4b0c2c1cee51f53ce9b43f78259950c2fd,590e28d2964b0aa4d7c7b98faee4676d467606c6761f7f41f99c52bb4813b5e4,bfe511158d674c3a1e21111223a49770bee93611d998e88a5d2ea3145de2b68b,7bbf62931cf3c596591a580212631aff51d6bc0577c54769953caadb23f6ab00,452df9213aedb3b9fed6db3e2ea9f49d3db226e2dac01828bc3dcd73b7a953b4'
+        // secrets: 'mom butter member circle feature law student join affair abandon slight roast,tuition opinion relax angle whisper female jelly bracket buddy clock fine hammer,brief fiscal monkey couch control hair spring before hire hope siren bacon,deny wife print subway wave typical anxiety rough deer borrow depart wrap,say improve almost virtual dynamic frog lend horn social fault sugar melody',
+        // delegates: 'f84fea3b92930f44c1b5d8834da70e37f7819b17bd72367a8619811f87a653c6,24971c952fc718dca69ccbc18b44affa4595f39c3375e624cd2fdba35a7b9b62,0603a41639854643bb731b69160f246f5da59898ac9f1d9d974d487518650f20,f772d0035e49bc7bb684bfbc9fd7ad2a0654f67610af3a0cd849f38103769ecf,4bcb19cb40554d3f5639e7423a5e17f5564da17fb025ee38d40f610175ee12bb'
       }
     },
     resetTempSecret() {
@@ -535,9 +563,9 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log('==== icon ', this.temp.icon)
           createDapp(this.temp).then((res) => {
             this.temp.dappId = res.data
+            this.temp.createTime = new Date().getTime()
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({

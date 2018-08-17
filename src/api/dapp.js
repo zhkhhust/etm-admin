@@ -8,6 +8,12 @@ export function fetchDappList(query) {
   })
 }
 
+export function fileUploadUrl() {
+  // console.dir(request.defaults)
+  return request.defaults.baseURL + '/dapp/upload.do'
+  // return request.b
+}
+
 export function fetchDapp(id) {
   return request({
     url: '/dapp/detail.do',
@@ -29,6 +35,26 @@ export function updateDapp(data) {
     url: '/dapp/update.do',
     method: 'post',
     params: data
+  })
+}
+
+export function uploadFile(data) {
+  return request.post('/dapp/upload.do', {
+    // again the same meta data + the actual photo
+    formData: {
+      title: 'My cat is awesome',
+      description: 'Sent on ' + new Date(),
+      is_public: 1,
+      files: data
+    },
+    json: true
+  }, function(err, res, body) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log(res)
+    }
+    // assert.equal(typeof body, 'object')
   })
 }
 
