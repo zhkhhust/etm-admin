@@ -2,7 +2,19 @@
   <div class="app-container">
     
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">添加节点</el-button>
+
+      <el-select clearable class="filter-item" v-model="listQuery.state" placeholder="状态">
+        <el-option v-for="item in statusOptions" :key="item.key" :label="item.value" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-select clearable class="filter-item" v-model="listQuery.ownerId" placeholder="提供者">
+        <el-option v-for="item in providers" :key="item.memberId" :label="item.account" :value="item.memberId">
+        </el-option>
+      </el-select>
+
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-add">添加节点</el-button>
     </div>
 
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
@@ -172,8 +184,8 @@ export default {
     getList() {
       this.listLoading = true
       fetchNodeList(this.listQuery).then(response => {
-        this.list = response.data
-        this.total = response.page.countTotal
+        this.list = response.data.list
+        this.total = response.data.page.countTotal
 
         // Just to simulate the time of the request
         setTimeout(() => {

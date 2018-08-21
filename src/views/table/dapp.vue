@@ -2,7 +2,21 @@
   <div class="app-container">
     
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">添加dapp</el-button>
+
+      <el-select clearable class="filter-item" v-model="listQuery.category" placeholder="应用类型">
+        <el-option v-for="item in categoryMap" :key="item.key" :label="item.label" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-input  v-model="listQuery.name" style="width:100px;" placeholder="应用名称"></el-input>
+
+      <el-select clearable class="filter-item" v-model="listQuery.creatorId" placeholder="开发者">
+        <el-option v-for="item in developers" :key="item.memberId" :label="item.account" :value="item.memberId">
+        </el-option>
+      </el-select>
+
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-add">添加dapp</el-button>
     </div>
   
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
@@ -30,7 +44,7 @@
       
       <el-table-column label="所有者" width="110" align="center">
         <template slot-scope="scope">
-          {{scope.row.creatorId}}
+          {{scope.row.owner}}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="状态" width="110" align="center">
@@ -82,7 +96,7 @@
             
             <el-button v-if="scope.row.state =='0'" size="mini" @click="handleRegister(scope.row.dappId)">注册</el-button>
             <el-button v-if="scope.row.state =='1'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'2')">安装</el-button>
-            <el-button v-if="scope.row.state =='2'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'3')">启动</el-button>
+            <el-button v-if="scope.row.state =='2' || scope.row.state =='4' " size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'3')">启动</el-button>
             <el-button v-if="scope.row.state =='3'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'4')">停止</el-button>
             <el-button v-if="scope.row.state =='3' || scope.row.state =='2' " size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'5')">卸载</el-button>
 
@@ -253,6 +267,9 @@ export default {
       developers: null,
       total: 0,
       listQuery: {
+        name: '',
+        category: null,
+        creatorId: null,
         page: 1,
         limit: 10,
         sort: '-createTime'
@@ -499,8 +516,8 @@ export default {
     getList() {
       this.listLoading = true
       fetchDappList(this.listQuery).then(response => {
-        this.list = response.data
-        this.total = response.page.countTotal
+        this.list = response.data.list
+        this.total = response.data.page.countTotal
 
         // Just to simulate the time of the request
         setTimeout(() => {

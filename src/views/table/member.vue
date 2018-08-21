@@ -1,11 +1,21 @@
 <template>
-  <div class="app-container">
-    
+  <div class="app-container">    
+   
+
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">添加用户</el-button>
+
+      <el-select clearable class="filter-item" v-model="listQuery.userType" placeholder="账号类型">
+        <el-option v-for="item in userTypeOptions" :key="item.key" :label="item.value" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-input  v-model="listQuery.account" style="width:100px;" placeholder="请输入账号"></el-input>
+
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-add">添加用户</el-button>
     </div>
 
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row style="margin-top:20px;">
       <el-table-column align="center" label='memberID' width="95">
         <template slot-scope="scope">
           <span>{{scope.row.memberId}}</span>
@@ -189,7 +199,7 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      this.fetchData()
     },
     handleSizeChange(val) {
       this.listQuery.limit = val
@@ -222,6 +232,7 @@ export default {
         if (valid) {
           createMember(this.temp).then((res) => {
             this.temp.memberId = res.data
+            this.temp.createTime = new Date().getTime()
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({

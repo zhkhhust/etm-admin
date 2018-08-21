@@ -28,64 +28,14 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
+    redirect: '/dashboard',
     name: 'Dashboard',
     hidden: true,
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index')
     }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: '管理', icon: 'example' },
-    children: [
-      {
-        path: 'member',
-        name: 'member',
-        component: () => import('@/views/table/member'),
-        meta: { title: '用户列表', icon: 'table' }
-      },
-      {
-        path: 'node',
-        name: 'node',
-        component: () => import('@/views/table/node'),
-        meta: { title: '节点列表', icon: 'tree' }
-      },
-      {
-        path: 'dapp',
-        name: 'dapp',
-        component: () => import('@/views/table/dapp'),
-        meta: { title: 'Dapp列表', icon: 'tree' }
-      },
-      {
-        path: 'dappDeploy',
-        name: 'dappDeploy',
-        component: () => import('@/views/table/dappDeploy'),
-        meta: { title: 'Dapp部署', icon: 'tree' }
-      }
-    ]
-  },
-  {
-    path: '/app',
-    component: Layout,
-    redirect: '/app/table',
-    name: 'App',
-    meta: { title: '版本配置', icon: 'example' },
-    children: [
-      {
-        path: 'package',
-        name: 'package',
-        component: () => import('@/views/app/package'),
-        meta: { title: '版本列表', icon: 'table' }
-      }
-    ]
-  },
-
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 export default new Router({
@@ -94,3 +44,50 @@ export default new Router({
   routes: constantRouterMap
 })
 
+export const asyncRouterMap = [
+  {
+    path: '/member',
+    component: Layout,
+    redirect: '/member/list',
+    name: 'Member',
+    meta: { title: '会员', icon: 'example', roles: ['admin'] },
+    children: [
+      {
+        path: 'list',
+        name: 'List',
+        component: () => import('@/views/table/member'),
+        meta: { title: '会员', icon: 'table' }
+      }
+    ]
+  },
+
+  {
+    path: '/node',
+    component: Layout,
+    meta: { title: '节点', icon: 'form', roles: ['admin', 'provider'] },
+    children: [
+      {
+        path: 'list',
+        name: 'NodeList',
+        component: () => import('@/views/table/node'),
+        meta: { title: '节点', icon: 'form' }
+      }
+    ]
+  },
+
+  {
+    path: '/dapp',
+    component: Layout,
+    meta: { title: 'Dapp', icon: 'form', roles: ['admin', 'developer'] },
+    children: [
+      {
+        path: 'list',
+        name: 'DappList',
+        component: () => import('@/views/table/dapp'),
+        meta: { title: 'Dapp', icon: 'form' }
+      }
+    ]
+  },
+
+  { path: '*', redirect: '/404', hidden: true }
+]
