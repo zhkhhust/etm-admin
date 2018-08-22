@@ -1,34 +1,43 @@
 <template>
   <div class="login-container">
-    <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
+    <el-form class="login-form" autoComplete="on" :model="regForm" :rules="loginRules" ref="regForm" label-position="left">
       <h3 class="title">etm dapp admin</h3>
-      <el-form-item prop="username">
+      <el-form-item prop="account">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="user" />
         </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="username" />
+        <el-input name="account" type="text" v-model="regForm.account" autoComplete="on" placeholder="account" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password"></svg-icon>
         </span>
-        <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on"
+        <el-input name="password" :type="pwdType" v-model="regForm.password" autoComplete="on"
           placeholder="password"></el-input>
           <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye" /></span>
       </el-form-item>
+      <el-form-item prop="userType">
+        <span class="svg-container svg-container_login">
+          <svg-icon icon-class="nested" />
+        </span>
+        <el-select class="filter-item" v-model="regForm.userType" placeholder="Please select">
+          <el-option v-for="item in userTypeOptions" :key="item.key" :label="item.value" :value="item.key">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
-        <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleLogin">
-          Sign in
+        <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleRegister">
+          Sign Up
         </el-button>
       </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">Do not have an account? 
-          <router-link class="inlineBlock" to="/register">
+        
+          <router-link class="inlineBlock" to="/login">
             <el-dropdown-item>
-              Create ONE
+              Back to sign in
             </el-dropdown-item>
           </router-link>
-        </span>
+
       </div>
     </el-form>
   </div>
@@ -36,6 +45,7 @@
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
+import { register } from '@/api/login'
 
 export default {
   name: 'login',
@@ -54,15 +64,21 @@ export default {
         callback()
       }
     }
+    const userTypeOptions = [
+      { key: 1, value: '开发者' },
+      { key: 2, value: '服务商' }
+    ]
     return {
-      loginForm: {
-        username: 'admin001',
-        password: '000000'
+      regForm: {
+        account: 'admin001',
+        password: '000000',
+        userType: undefined
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        account: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }]
       },
+      userTypeOptions,
       loading: false,
       pwdType: 'password'
     }
@@ -75,13 +91,19 @@ export default {
         this.pwdType = 'password'
       }
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+    handleRegister() {
+      this.$refs.regForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('Login', this.loginForm).then(() => {
+          register(this.regForm).then(() => {
             this.loading = false
-            this.$router.push({ path: '/' })
+            this.$notify({
+              title: '成功',
+              message: '注册成功',
+              type: 'success',
+              duration: 2000
+            })
+            this.$router.push({ path: '/login' })
           }).catch(() => {
             this.loading = false
           })
