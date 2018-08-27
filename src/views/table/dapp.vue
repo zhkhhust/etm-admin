@@ -95,10 +95,10 @@
             </el-upload>
             
             <el-button v-if="scope.row.state =='0'" size="mini" @click="handleRegister(scope.row.dappId)">注册</el-button>
-            <el-button v-if="scope.row.state =='1'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'2')">安装</el-button>
+            <el-button v-if="scope.row.state =='1' || scope.row.state =='5'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'2')">安装</el-button>
             <el-button v-if="scope.row.state =='2' || scope.row.state =='4' " size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'3')">启动</el-button>
             <el-button v-if="scope.row.state =='3'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'4')">停止</el-button>
-            <el-button v-if="scope.row.state =='3' || scope.row.state =='2' " size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'5')">卸载</el-button>
+            <el-button v-if="scope.row.state =='3' || scope.row.state =='2' || scope.row.state =='4'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'5')">卸载</el-button>
 
           </span>
         </template>
