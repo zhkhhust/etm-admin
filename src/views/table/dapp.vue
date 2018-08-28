@@ -83,7 +83,7 @@
             </el-upload>
 
             <el-upload style="float:left; margin-left:8px;"
-              accept="application/x-zip-compressed"
+              accept="application/x-zip-compressed,application/zip"
               :action="fileUploadUrl"
               :before-upload="beforeDappUpload"
               name="files"
@@ -444,7 +444,7 @@ export default {
     },
     beforeDappUpload(file) {
       console.log('Before dapp upload')
-      const isZip = file.type === 'application/x-zip-compressed'
+      const isZip = file.type === 'application/x-zip-compressed'|| || file.type === 'application/zip'
       if (!isZip) {
         this.$message.error('上传文件只能是zip格式!')
         return false
