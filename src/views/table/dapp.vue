@@ -377,6 +377,7 @@ export default {
     beforeImageUpload(file) {
       const isIMAGE = file.type === 'image/jpeg' || file.type === 'image/gif' || file.type === 'image/png'
       if (!isIMAGE) {
+        console.log('filetype:', file.type)
         this.$message.error('上传文件只能是图片格式!')
         return false
       }
@@ -444,8 +445,9 @@ export default {
     },
     beforeDappUpload(file) {
       console.log('Before dapp upload')
-      const isZip = file.type === 'application/x-zip-compressed'|| || file.type === 'application/zip'
+      const isZip = file.type === 'application/x-zip-compressed' || file.type === 'application/zip'
       if (!isZip) {
+        console.log('dapp filetype: ', file.type)
         this.$message.error('上传文件只能是zip格式!')
         return false
       }
