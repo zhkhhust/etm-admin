@@ -655,6 +655,7 @@ export default {
           const tempData = Object.assign({}, this.tempSecret)
           console.log(' ==== register ==== ', tempData)
           registerDapp(tempData).then(() => {
+            this.temp.state = 1
             for (const v of this.list) {
               if (v.dappId === this.temp.dappId) {
                 const index = this.list.indexOf(v)
