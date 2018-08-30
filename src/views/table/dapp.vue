@@ -563,7 +563,7 @@ export default {
       // this.resetTempSecret()
       this.tempSecret = {
         dappId: dappId,
-        secret: 'early sugar cannon mansion expose tunnel piece manual destroy exhaust helmet rather',
+        secret: 'someone manual strong movie roof episode eight spatial brown soldier soup motor',
         secondSecret: ''
       }
       this.secretFormVisible = true
