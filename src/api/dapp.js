@@ -73,3 +73,11 @@ export function registerDapp(data) {
     params: data
   })
 }
+
+export function transferToDapp(data) {
+  return request({
+    url: '/dapp/transferToDapp.do',
+    method: 'post',
+    params: data
+  })
+}

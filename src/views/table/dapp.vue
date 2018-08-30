@@ -20,11 +20,6 @@
     </div>
   
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column align="center" label='ID' width="95">
-        <template slot-scope="scope">
-          <span>{{scope.row.dappId}}</span>
-        </template>
-      </el-table-column>
 
       <el-table-column label="名称" width="110" align="center">
         <template slot-scope="scope">
@@ -52,19 +47,14 @@
           {{scope.row.state | statusFilter}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建日期" width="200">
+      <el-table-column align="center" label="创建日期" width="160">
         <template slot-scope="scope">
           <span>{{scope.row.createTime | formatTime}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" prop="action" label="操作" width="400">
+      <el-table-column align="center" prop="action" label="操作" width="480">
         <template slot-scope="scope">
-          <el-row>
-            <el-col :span="2"><div class="grid-content bg-purple"></div></el-col>
-            <el-col :span="2"><div class="grid-content bg-purple-light"></div></el-col>
-            <el-col :span="2"><div class="grid-content bg-purple"></div></el-col>
-          </el-row>
           <span>
             <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" style="float:left;">编辑</el-button>
 
@@ -95,9 +85,10 @@
             </el-upload>
             
             <el-button v-if="scope.row.state =='0'" size="mini" @click="handleRegister(scope.row.dappId)">注册</el-button>
-            <el-button v-if="scope.row.state =='1' || scope.row.state =='5'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'2')">安装</el-button>
-            <el-button v-if="scope.row.state =='2' || scope.row.state =='4' " size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'3')">启动</el-button>
-            <el-button v-if="scope.row.state =='3'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'4')">停止</el-button>
+            <el-button v-if="scope.row.state =='1' || scope.row.state =='5'" size="mini"  @click="handleModifyState(scope.row.dappId,'2')">安装</el-button>
+            <el-button v-if="scope.row.state =='2' || scope.row.state =='4' " size="mini" @click="handleModifyState(scope.row.dappId,'3')">启动</el-button>
+            <el-button v-if="scope.row.state =='3'" size="mini"  @click="handleModifyState(scope.row.dappId,'4')">停止</el-button>
+            <el-button v-if="scope.row.state =='3'" size="mini"  @click="handleTransferToDapp(scope.row.dappId)">转账</el-button>
             <el-button v-if="scope.row.state =='3' || scope.row.state =='2' || scope.row.state =='4'" size="mini" type="danger" @click="handleModifyState(scope.row.dappId,'5')">卸载</el-button>
 
           </span>
@@ -117,12 +108,33 @@
             <el-input  v-model="tempSecret.secret" required></el-input>
         </el-form-item>
         <el-form-item label="二级密码" prop="secondSecret"> 
-            <el-input  v-model="tempSecret.secondSecret" required></el-input>
+            <el-input  v-model="tempSecret.secondSecret"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="secretFormVisible = false">取消</el-button>
         <el-button type="primary" @click="registerDapp">注册</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="转账" :visible.sync="transferFormVisible">
+      <el-form ref="transferForm" :model="tempTransfer" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+        <el-form-item label="主密码" prop="secret"> 
+            <el-input  v-model="tempTransfer.secret" required></el-input>
+        </el-form-item>
+        <el-form-item label="二级密码" prop="secondSecret"> 
+            <el-input  v-model="tempTransfer.secondSecret"></el-input>
+        </el-form-item>
+        <el-form-item label="currency" prop="currency"> 
+            <el-input  v-model="tempTransfer.currency" required></el-input>
+        </el-form-item>
+        <el-form-item label="金额" prop="amount"> 
+            <el-input  v-model="tempTransfer.amount" required></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="transferFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="transferToDapp">转账</el-button>
       </div>
     </el-dialog>
 
@@ -210,7 +222,7 @@
 
 <script>
 import { fetchMemberList } from '@/api/member'
-import { fetchDappList, createDapp, updateDapp, updateDappState, registerDapp, fileUploadUrl } from '@/api/dapp'
+import { fetchDappList, createDapp, updateDapp, updateDappState, registerDapp, fileUploadUrl, transferToDapp } from '@/api/dapp'
 import { parseTime } from '@/utils/index'
 
 const categoryMap = [
@@ -291,8 +303,16 @@ export default {
         secret: undefined,
         secondSecret: undefined
       },
+      tempTransfer: {
+        dappId: undefined,
+        secret: undefined,
+        secondSecret: undefined,
+        currency: undefined,
+        amount: 0
+      },
       dialogFormVisible: false,
       secretFormVisible: false,
+      transferFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑dapp',
@@ -571,6 +591,18 @@ export default {
         this.$refs['secretForm'].clearValidate()
       })
     },
+    handleTransferToDapp(dappId) {
+      // this.resetTempSecret()
+      this.tempTransfer = {
+        dappId: dappId,
+        secret: 'someone manual strong movie roof episode eight spatial brown soldier soup motor',
+        secondSecret: ''
+      }
+      this.transferFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['transferForm'].clearValidate()
+      })
+    },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
@@ -666,7 +698,32 @@ export default {
             this.secretFormVisible = false
             this.$notify({
               title: '成功',
-              message: '更新成功',
+              message: '注册成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    transferToDapp() {
+      this.$refs['transferForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.tempTransfer)
+          console.log(' ==== register ==== ', tempData)
+          transferToDapp(tempData).then(() => {
+            this.temp.state = 1
+            for (const v of this.list) {
+              if (v.dappId === this.temp.dappId) {
+                const index = this.list.indexOf(v)
+                this.list.splice(index, 1, this.temp)
+                break
+              }
+            }
+            this.transferFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '转账成功',
               type: 'success',
               duration: 2000
             })
